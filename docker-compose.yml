@@ -1,0 +1,27 @@
+version: '3.7'
+
+services:
+
+  composer:
+    build:
+      context: .
+      dockerfile: Dockerfile-composer
+    volumes:
+      - ./src:/var/www/html
+    command: composer update
+
+  app:
+    image: app
+    build:
+      context: .
+    volumes:
+      - ./src:/var/www/html
+    ports:
+      - "80:80"
+    depends_on:
+      - redis
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
