@@ -5,11 +5,12 @@
     "license": "proprietary",
     "type": "project",
     "require": {
-        "php": "^7.2.5",
+        "php": "^7.4",
         "illuminate/redis": "^7.15.0",
         "laravel/lumen-framework": "^7.0",
         "ext-curl": "*",
-        "ext-dom": "*"
+        "ext-dom": "*",
+        "ext-json": "*"
     },
     "require-dev": {
         "fzaninotto/faker": "^1.9.1",
