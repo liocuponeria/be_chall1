@@ -7,7 +7,9 @@
     "require": {
         "php": "^7.2.5",
         "illuminate/redis": "^7.15.0",
-        "laravel/lumen-framework": "^7.0"
+        "laravel/lumen-framework": "^7.0",
+        "ext-curl": "*",
+        "ext-dom": "*"
     },
     "require-dev": {
         "fzaninotto/faker": "^1.9.1",
