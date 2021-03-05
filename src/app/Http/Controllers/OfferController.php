@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use \App\Services\OfferService;
+use App\Services\CralwerService;
 
 class OfferController extends Controller
 {
@@ -12,15 +12,14 @@ class OfferController extends Controller
      *
      * @return void
      */
-    public function __construct(OfferService $offerService)
+    public function __construct(CralwerService $offerService)
     {
         $this->offerService = $offerService;
     }
 
-    public function get($id)
-    {
-        return $this->offerService->get($id);
-        // return OfferService::get($id);
-        // return app(OfferService::class)->get($id);
+    public function get($page)
+    {        
+        $result = $this->offerService->getPageData($page);
+        return response()->json(['data'=>$result],200);
     }
 }
