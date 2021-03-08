@@ -2,24 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\CralwerService;
+use App\Helpers\Util;
+use App\Services\SubmarinoCrawlerService;
 
 class OfferController extends Controller
 {
-    protected $offerService;
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct(CralwerService $offerService)
-    {
-        $this->offerService = $offerService;
-    }
+    const BASE_URL = 'https://www.submarino.com.br';
 
     public function get($page)
     {        
-        $result = $this->offerService->getPageData($page);
-        return response()->json(['data'=>$result],200);
+        $requestUrl = Util::buildPagination($page,self::BASE_URL);
+        
+        $pageDOM = Util::requestDOM($requestUrl);
+
+        $crawler = new SubmarinoCrawlerService($pageDOM);
+
+        if(!$crawler->products){
+            return response()->json(['data'=>null,'success'=>false,'message'=>'No Products Found.'],200);
+        };
+        return response()->json(['data'=>$crawler->getProducts(),'succes'=>true,'message'=>'Products Found'],200);
     }
 }

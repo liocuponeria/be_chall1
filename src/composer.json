@@ -8,6 +8,7 @@
         "php": "^7.2.5",
         "fabpot/goutte": "^4.0",
         "illuminate/redis": "^7.15.0",
+        "kub-at/php-simple-html-dom-parser": "^1.9",
         "laravel/lumen-framework": "^7.0"
     },
     "require-dev": {
