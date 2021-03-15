@@ -1,12 +1,17 @@
 <?php
 
-
 namespace App\Formatter;
-
 
 class ResponseFormatter implements ItemFormatterInterface
 {
 
+    /**
+     * @inheritDoc
+     *
+     * @param $response
+     *
+     * @return array
+     */
     public function formatItem($response)
     {
         $html = new \DOMDocument();
