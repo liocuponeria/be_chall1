@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Services\MyService;
+use App\Services\BaseService;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -24,7 +24,7 @@ class MyServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(MyService::class);
-        $this->app->alias(MyService::class, 'myservice');
+        $this->app->singleton(BaseService::class);
+        $this->app->alias(BaseService::class, 'myservice');
     }
 }

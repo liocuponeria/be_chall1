@@ -17,10 +17,8 @@ class OfferController extends Controller
         $this->offerService = $offerService;
     }
 
-    public function get($id)
+    public function get($page): \Illuminate\Support\Collection
     {
-        return $this->offerService->get($id);
-        // return OfferService::get($id);
-        // return app(OfferService::class)->get($id);
+        return $this->offerService->get($page);
     }
 }
