@@ -5,9 +5,9 @@
     "license": "proprietary",
     "type": "project",
     "require": {
-        "php": "^7.2.5",
-        "illuminate/redis": "^7.15.0",
-        "laravel/lumen-framework": "^7.0"
+        "php": "^7.3.0|^8.0",
+        "illuminate/redis": "^8.15.0",
+        "laravel/lumen-framework": "^8.0"
     },
     "require-dev": {
         "fzaninotto/faker": "^1.9.1",
