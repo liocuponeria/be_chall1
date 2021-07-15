@@ -8,7 +8,7 @@ use App\Services\CurlService;
 
 class ExampleController extends Controller
 {
-    public function getData($page)
+    public function getData(string $page)
     {
         if ($page == 1) {
             $url = General::URL_SIMPLE_TYPE;
