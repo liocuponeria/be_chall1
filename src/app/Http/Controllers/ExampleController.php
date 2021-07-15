@@ -2,17 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\Util\DomHelper;
+use App\Constants\General;
+use App\Services\CurlService;
+
 class ExampleController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    public function getData($page)
     {
-        //
-    }
+        if ($page == 1) {
+            $url = General::URL_SIMPLE_TYPE;
+        }elseif ($page == 2) {
+            $url = General::URL_WITH_QUERY_TYPE;   
+        } else {
+            return response()->json(['status' => '500', 'description' => 'Houve um erro durante a requisição']);
+        }
 
-    //
+        $curlService    = new CurlService($url);
+        $output         = $curlService->execCurl();
+        $domHelper      = new DomHelper($output); 
+        
+        return $domHelper->formatResponse();
+    }
 }

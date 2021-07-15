@@ -15,6 +15,10 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
+$router->group(['prefix' => 'crawler'], function () use ($router) {
+    $router->get('/{page}', 'ExampleController@getData');
+});
+
 $router->group(['prefix' => 'healthz'], function () use ($router) {
     $router->get('', 'Controller@healthz');
 });
