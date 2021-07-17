@@ -3,10 +3,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\Constants;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use Goutte\Client;
 use Symfony\Component\HttpClient\HttpClient;
+use App\Console\Client as RequestClient;
 
 class OfferController extends BaseController
 {
@@ -17,48 +19,13 @@ class OfferController extends BaseController
      */
     public function index()
     {
-        $url = "https://www.submarino.com.br/busca/tv";
-        $client = new Client(HttpClient::create(['timeout' => 60]));
-        $client->setServerParameter(
-            'HTTP_USER_AGENT',
-            'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:73.0) Gecko/20100101 Firefox/73.0'
-        );
+        $url = Constants::URL_INITIAL_TYPE;
 
-        $crawler = $client->request('GET', $url);
+        $crawler = RequestClient::request($url);
 
         //return response()->json(["data" => $crawler->text()]);
 
-        $stringCountResult = $crawler->filter('.jRHnRS')->each(function ($node) {
-            $return = $node->filter('a')->each(function ($a) {
-                $data['name'] = $a->filter('span.keKVYT')->each(function ($name) {
-                    return $name->text();
-                });
-
-                if (count($data['name'])){
-                    $data['name'] = $data['name'][0];
-                }
-
-                $data['priceIn'] = $a->filter('div.bVMOoi > span.izVeKJ')->each(function ($price) {
-                    return str_replace( 'icone de primePrime', '', $price->text());
-                });
-
-                if (count($data['priceIn'])){
-                    $data['priceIn'] = $data['priceIn'][0];
-                }
-
-                $data['pricePer'] = $a->filter('div.bVMOoi > span.kTMqhz')->each(function ($price) {
-                    return str_replace( 'icone de primePrime', '', $price->text());
-                });
-
-                if (count($data['pricePer'])){
-                    $data['pricePer'] = $data['pricePer'][0];
-                }
-
-                return $data;
-            });
-
-            return count($return) ? $return[0] : [];
-        });
+        $stringCountResult = $this->assembleArray($crawler);
 
         return response()->json(["urlRequest" => $url, "data" => $stringCountResult]);
     }
@@ -72,19 +39,18 @@ class OfferController extends BaseController
      */
     public function lister(Request $request)
     {
-        $page = $request->id * 24;
-        $url = "https://www.submarino.com.br/busca/tv".($page == 0 ? "" : "?limite=24&offset=".$page);
-        $client = new Client(HttpClient::create(['timeout' => 60]));
-        $client->setServerParameter(
-            'HTTP_USER_AGENT',
-            'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:73.0) Gecko/20100101 Firefox/73.0'
-        );
+        $page = $request->id == 0 ? 0 : ($request->id - 1) * 24;
+        $url = Constants::URL_QUERY_TYPE.($page);
+        $crawler = RequestClient::request($url);
 
-        $crawler = $client->request('GET', $url);
+        $stringCountResult = $this->assembleArray($crawler);
 
-        //return response()->json(["urlRequest" => $url, "data" => $crawler->text()]);
+        return response()->json(["urlRequest" => $url, "data" => $stringCountResult]);
+    }
 
-        $stringCountResult = $crawler->filter('.jRHnRS')->each(function ($node) {
+    private function assembleArray($client) {
+
+        return $client->filter('.jRHnRS')->each(function ($node) {
             $return = $node->filter('a')->each(function ($a) {
                 $data['name'] = $a->filter('span.keKVYT')->each(function ($name) {
                     return $name->text();
@@ -115,7 +81,5 @@ class OfferController extends BaseController
 
             return count($return) ? $return[0] : [];
         });
-
-        return response()->json(["urlRequest" => $url, "data" => $stringCountResult]);
     }
 }
