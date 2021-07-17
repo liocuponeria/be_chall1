@@ -1,5 +1,7 @@
 <?php
 
+/** @var \Laravel\Lumen\Routing\Router $router */
+
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -20,5 +22,6 @@ $router->group(['prefix' => 'healthz'], function () use ($router) {
 });
 
 $router->group(['prefix' => 'offer'], function () use ($router) {
-    $router->get('/{id}', 'OfferController@get');
+    $router->get('/', 'OfferController@index');
+    $router->get('/{id}', 'OfferController@lister');
 });
