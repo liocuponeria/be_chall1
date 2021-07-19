@@ -16,7 +16,7 @@ class CrawlerController extends BaseController
                 )
             )
         );
-        $url = 'https://www.submarino.com.br/busca/tv?limite=24&offset=' . 24*$id;
+        $url = 'https://www.submarino.com.br/busca/tv?limite=24&offset=' . 24*$id-1;
         $result = file_get_contents($url, false, $context);
         $name = explode('<span class="src__Text-sc-154pg0p-0 src__Name-r60f4z-1 keKVYT">', $result);
         $value = explode('<span class="src__Text-sc-154pg0p-0 src__PromotionalPrice-r60f4z-6 kTMqhz">', $result);
