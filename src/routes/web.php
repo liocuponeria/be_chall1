@@ -1,5 +1,4 @@
 <?php
-
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -21,4 +20,8 @@ $router->group(['prefix' => 'healthz'], function () use ($router) {
 
 $router->group(['prefix' => 'offer'], function () use ($router) {
     $router->get('/{id}', 'OfferController@get');
+});
+
+$router->group(['prefix' => 'crawler'], function () use ($router) {
+    $router->get('/{id}', 'CrawlerController@show');
 });
