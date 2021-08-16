@@ -29,7 +29,9 @@ access
 ![pages](https://i.imgur.com/wX0BpJw.jpeg "pages")
 
 - Create a crawler service that get a product list (name | price) from the following base url <https://www.submarino.com.br/busca/tv> for page 1
-- Page 2 URL is <https://www.submarino.com.br/busca/tv?limite=24&offset=24> 
+- Page 2 URL is <https://www.submarino.com.br/busca/tv?limite=24&offset=24>
+- Keep return following pages if exists (3,4,5,...)
+- Use MVC model
 - Return a JSON containning all the products from the main feed with the following format from the specific page
 ```json
 [{
