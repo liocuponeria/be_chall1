@@ -4,6 +4,7 @@
 namespace App\Extractors;
 
 
+use App\Connection\OutsourcedHttpClient;
 use App\Constants\Extractors;
 
 class ExtractorBuilder
@@ -27,7 +28,7 @@ class ExtractorBuilder
     {
         if (array_key_exists($this->extractorName, self::AVAILABLE_EXTRACTORS)) {
             $clientClassName = self::AVAILABLE_EXTRACTORS[$this->extractorName];
-            return new $clientClassName();
+            return new $clientClassName(new OutsourcedHttpClient());
         }
         return null;
     }
