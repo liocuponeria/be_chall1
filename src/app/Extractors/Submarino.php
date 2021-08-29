@@ -6,6 +6,14 @@ namespace App\Extractors;
 
 use App\Connection\OutsourcedHttpClient;
 use GuzzleHttp\Exception\GuzzleException;
+use PHPHtmlParser\Dom;
+use PHPHtmlParser\Dom\Node\Collection;
+use PHPHtmlParser\Exceptions\ChildNotFoundException;
+use PHPHtmlParser\Exceptions\CircularException;
+use PHPHtmlParser\Exceptions\ContentLengthException;
+use PHPHtmlParser\Exceptions\LogicalException;
+use PHPHtmlParser\Exceptions\NotLoadedException;
+use PHPHtmlParser\Exceptions\StrictException;
 
 class Submarino implements ExtractorInterface
 {
@@ -14,18 +22,36 @@ class Submarino implements ExtractorInterface
      */
     private $httpClient;
 
+    /**
+     * @var Dom
+     */
+    private $domParser;
+
     public function __construct(OutsourcedHttpClient $httpClient)
     {
         $this->httpClient = $httpClient;
+        $this->domParser = new Dom();
     }
 
     /**
+     * @param int $page
+     * @return array
      * @throws GuzzleException
+     * @throws ChildNotFoundException
+     * @throws CircularException
+     * @throws ContentLengthException
+     * @throws LogicalException
+     * @throws NotLoadedException
+     * @throws StrictException
      */
     public function extract(int $page = 1): array
     {
         $htmlString = $this->getHtmlPage();
-        return [];
+
+        $this->domParser->loadStr($htmlString);
+        $productElement = $this->domParser->find('.jRHnRS');
+
+        return $this->mountExportableInformation($productElement);
     }
 
     /**
@@ -41,5 +67,28 @@ class Submarino implements ExtractorInterface
             ]
         ]);
         return $requestedPage->getBody()->getContents();
+    }
+
+    /**
+     * @param Collection|null $productsElement
+     * @return array
+     */
+    private function mountExportableInformation(?Collection $productsElement): array
+    {
+        $productList = [];
+        if ($productsElement->count() > 0) {
+            $productsElement->each(function ($product) use (&$productList) {
+                $productNameElement =  data_get($product->find('.keKVYT'), '0', '');
+                $productName = htmlspecialchars_decode( $productNameElement->text() );
+                $productPriceElement =  data_get($product->find('.kTMqhz'), '0', '');
+                $productPrice = $productPriceElement->text();
+
+                $productList[] = [
+                    'name' => $productName,
+                    'price' => $productPrice
+                ];
+            });
+        }
+        return $productList;
     }
 }

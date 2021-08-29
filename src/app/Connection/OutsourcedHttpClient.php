@@ -39,8 +39,7 @@ class OutsourcedHttpClient
         Log::info('OutsourcedHttpClient Request-Response', [
             'time'   => $this->formatRequestTime($end, $start),
             'uri'    => $uri,
-            'method' => $method,
-            'response' => $result->getBody()->getContents()
+            'method' => $method
         ]);
 
         return $result;

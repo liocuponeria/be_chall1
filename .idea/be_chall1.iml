@@ -114,8 +114,12 @@
       <excludeFolder url="file://$MODULE_DIR$/src/vendor/guzzlehttp/promises" />
       <excludeFolder url="file://$MODULE_DIR$/src/vendor/ralouphie/getallheaders" />
       <excludeFolder url="file://$MODULE_DIR$/src/vendor/psr/http-message" />
-      <excludeFolder url="file://$MODULE_DIR$/src/vendor/psr/http-factory" />
       <excludeFolder url="file://$MODULE_DIR$/src/vendor/psr/http-client" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/php-http/httplug" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/php-http/promise" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/myclabs/php-enum" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/paquettg/php-html-parser" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/paquettg/string-encode" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
