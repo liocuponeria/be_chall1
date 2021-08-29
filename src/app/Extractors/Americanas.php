@@ -5,6 +5,7 @@ namespace App\Extractors;
 
 
 use App\Connection\OutsourcedHttpClient;
+use Illuminate\Support\Collection;
 
 class Americanas implements ExtractorInterface
 {
@@ -19,13 +20,13 @@ class Americanas implements ExtractorInterface
         $this->httpClient = $httpClient;
     }
 
-    public function extract(int $page = 1): array
+    public function extract(int $page = 1): Collection
     {
         $this->getHtmlPage();
-        return ['americanas' => 'test'];
+        return collect(['americanasClient' => 'test']);
     }
 
-    public function getHtmlPage(): void
+    public function getHtmlPage(): string
     {
         $htmlPage = $this->httpClient->request('GET', 'busca/celulares', [
             'headers' => [
@@ -34,5 +35,6 @@ class Americanas implements ExtractorInterface
                 'accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'
             ]
         ]);
+        return $htmlPage->getBody()->getContents();
     }
 }

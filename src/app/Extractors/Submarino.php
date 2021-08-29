@@ -5,6 +5,7 @@ namespace App\Extractors;
 
 
 use App\Connection\OutsourcedHttpClient;
+use App\Product;
 use GuzzleHttp\Exception\GuzzleException;
 use PHPHtmlParser\Dom;
 use PHPHtmlParser\Dom\Node\Collection;
@@ -27,6 +28,8 @@ class Submarino implements ExtractorInterface
      */
     private $domParser;
 
+    private const DEFAULT_URI = 'busca/tv';
+
     public function __construct(OutsourcedHttpClient $httpClient)
     {
         $this->httpClient = $httpClient;
@@ -44,7 +47,7 @@ class Submarino implements ExtractorInterface
      * @throws NotLoadedException
      * @throws StrictException
      */
-    public function extract(int $page = 1): array
+    public function extract(int $page = 1): \Illuminate\Support\Collection
     {
         $htmlString = $this->getHtmlPage();
 
@@ -59,7 +62,7 @@ class Submarino implements ExtractorInterface
      */
     public function getHtmlPage(): string
     {
-        $requestedPage = $this->httpClient->request('GET', 'busca/tv', [
+        $requestedPage = $this->httpClient->request('GET', self::DEFAULT_URI, [
             'headers' => [
                 'user-agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36',
                 'accept-language' => 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
@@ -73,9 +76,10 @@ class Submarino implements ExtractorInterface
      * @param Collection|null $productsElement
      * @return array
      */
-    private function mountExportableInformation(?Collection $productsElement): array
+    private function mountExportableInformation(?Collection $productsElement): \Illuminate\Support\Collection
     {
-        $productList = [];
+        $productList = collect([]);
+
         if ($productsElement->count() > 0) {
             $productsElement->each(function ($product) use (&$productList) {
                 $productNameElement =  data_get($product->find('.keKVYT'), '0', '');
@@ -83,10 +87,10 @@ class Submarino implements ExtractorInterface
                 $productPriceElement =  data_get($product->find('.kTMqhz'), '0', '');
                 $productPrice = $productPriceElement->text();
 
-                $productList[] = [
+                $productList->push(Product::create([
                     'name' => $productName,
                     'price' => $productPrice
-                ];
+                ]));
             });
         }
         return $productList;
