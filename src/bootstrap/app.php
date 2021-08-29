@@ -1,11 +1,12 @@
 <?php
 
+use App\Providers\ExtractorServiceProvider;
+
 require_once __DIR__ . '/../vendor/autoload.php';
 
 (new Laravel\Lumen\Bootstrap\LoadEnvironmentVariables(
     dirname(__DIR__)
 ))->bootstrap();
-
 date_default_timezone_set(env('APP_TIMEZONE', 'UTC'));
 
 /*
@@ -24,6 +25,7 @@ $app = new Laravel\Lumen\Application(
 );
 
 $app->withFacades(true, [
+    'App\Facades\Crawler' => 'crawler'
 ]);
 
 $app->withEloquent();
@@ -63,6 +65,7 @@ $app->register(Illuminate\Redis\RedisServiceProvider::class);
 */
 
 $app->configure('app');
+$app->configure('extractor');
 
 /*
 |--------------------------------------------------------------------------
@@ -97,6 +100,7 @@ $app->configure('app');
 // $app->register(App\Providers\AppServiceProvider::class);
 // $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
+$app->register(ExtractorServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------

@@ -22,3 +22,8 @@ $router->group(['prefix' => 'healthz'], function () use ($router) {
 $router->group(['prefix' => 'offer'], function () use ($router) {
     $router->get('/{id}', 'OfferController@get');
 });
+
+/**
+ * Crawler Routes
+ */
+$router->get('crawler[/{page}]', 'CrawlerController@extract');
