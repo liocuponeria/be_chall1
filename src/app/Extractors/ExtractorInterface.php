@@ -16,5 +16,5 @@ interface ExtractorInterface
     /**
      * @throws GuzzleException
      */
-    public function getHtmlPage(): void;
+    public function getHtmlPage(): string;
 }
