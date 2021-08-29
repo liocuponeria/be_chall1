@@ -11,7 +11,8 @@ class ExtractorBuilder
 {
     private const AVAILABLE_EXTRACTORS = [
         Extractors::SUBMARINO  => Submarino::class,
-        Extractors::AMERICANAS => Americanas::class
+        Extractors::AMERICANAS => Americanas::class,
+        Extractors::CASASBAHIA => CasasBahia::class
     ];
 
     private $extractorName;
