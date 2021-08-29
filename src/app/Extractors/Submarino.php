@@ -29,6 +29,7 @@ class Submarino implements ExtractorInterface
     private $domParser;
 
     private const DEFAULT_URI = 'busca/tv';
+    private const PAGE_LIMIT = 24;
 
     public function __construct(OutsourcedHttpClient $httpClient)
     {
@@ -49,7 +50,7 @@ class Submarino implements ExtractorInterface
      */
     public function extract(int $page = 1): \Illuminate\Support\Collection
     {
-        $htmlString = $this->getHtmlPage();
+        $htmlString = $this->getHtmlPage($page);
 
         $this->domParser->loadStr($htmlString);
         $productElement = $this->domParser->find('.jRHnRS');
@@ -60,9 +61,12 @@ class Submarino implements ExtractorInterface
     /**
      * @throws GuzzleException
      */
-    public function getHtmlPage(): string
+    public function getHtmlPage(int $page = 1): string
     {
+        $query = $this->mountQueryStringFromPage($page);
+
         $requestedPage = $this->httpClient->request('GET', self::DEFAULT_URI, [
+            'query' => $query,
             'headers' => [
                 'user-agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36',
                 'accept-language' => 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
@@ -94,5 +98,13 @@ class Submarino implements ExtractorInterface
             });
         }
         return $productList;
+    }
+
+    private function mountQueryStringFromPage(int $page): array
+    {
+        return [
+            'limite' => self::PAGE_LIMIT,
+            'offset' => $page === 1 ? 0 : ($page-1) * self::PAGE_LIMIT
+        ];
     }
 }

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Facade;
 /**
  * Class Crawler
  * @package App\Facades
- * @method static extract()
+ * @method static extract(int $page)
  */
 class Crawler extends Facade
 {

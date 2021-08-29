@@ -8,13 +8,15 @@ use Illuminate\Http\Response;
 
 class CrawlerController extends Controller
 {
-    public function __construct()
-    {
 
-    }
-
+    /**
+     * @param int $page
+     * @return JsonResponse
+     */
     public function extract($page = 1): JsonResponse
     {
-        return response()->json(Crawler::extract(), Response::HTTP_OK);
+        return response()->json(
+            Crawler::extract($page), Response::HTTP_OK
+        );
     }
 }
