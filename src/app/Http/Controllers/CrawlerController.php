@@ -52,6 +52,7 @@ class CrawlerController extends Controller
         return $items[0];
     }
     public function get(){
+        //esqueci do add .
         try {
             $test = $this->get_web_page("https://www.submarino.com.br/busca/tv");
             return $this->explode_content($test['content']);
