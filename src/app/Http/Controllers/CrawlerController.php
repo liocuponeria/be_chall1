@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Log;
 
 class CrawlerController extends Controller
 {
@@ -54,11 +55,26 @@ class CrawlerController extends Controller
     public function explode_items($items){
         return explode('}}',$items);
     }
+    public function set_product($item){
+        $ret = [];
+        $j= 0;
+        for ($i=0; $i < count($item) ; $i++) { 
+            Log::info($i);
+            Log::info($item[$i]);
+            if($item[$i] == '"Product","name"'){
+                $ret[$j]['name'] = str_replace('"',"",str_replace('\\','',$item[$i+1]));
+                $j++;
+            }
+        }
+
+        return $ret;
+    }
     public function get(){
         try {
-            $test = $this->get_web_page("https://www.submarino.com.br/busca/tv");
+            $test = $this->get_web_page("https://www.submarino.com.br/busca/tv?limite=48&offset=48");
             $items = $this->explode_content($test['content']);
-            return $this->explode_items($items)[0];
+            return $this->set_product(explode(":",$this->explode_items($items)[1]));
+            // return explode(":",$this->explode_items($items)[1]);
         } catch (\Throwable $th) {
             return $th->getMessage();
         }
