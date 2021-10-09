@@ -63,6 +63,9 @@ class CrawlerController extends Controller
             Log::info($item[$i]);
             if($item[$i] == '"Product","name"'){
                 $ret[$j]['name'] = str_replace('"',"",str_replace('\\','',$item[$i+1]));
+            }
+            if($item[$i] == '"AggregateOffer","lowPrice"'){
+                $ret[$j]['price'] = str_replace('"',"",explode(',',$item[$i+1])[0]);
                 $j++;
             }
         }
@@ -72,8 +75,17 @@ class CrawlerController extends Controller
     public function get(){
         try {
             $test = $this->get_web_page("https://www.submarino.com.br/busca/tv?limite=48&offset=48");
-            $items = $this->explode_content($test['content']);
-            return $this->set_product(explode(":",$this->explode_items($items)[1]));
+            $items = $this->explode_items($this->explode_content($test['content']));
+            //return $items[0];
+            $ret = [];
+            $indice = 0;
+            for ($i=0; $i < count($items) ; $i++) { 
+                $item = $items[$i];
+                $ret[$indice] = $this->set_product(explode(":",$item));
+                $indice++;
+            }
+
+            return $ret;
             // return explode(":",$this->explode_items($items)[1]);
         } catch (\Throwable $th) {
             return $th->getMessage();
