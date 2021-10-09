@@ -51,11 +51,14 @@ class CrawlerController extends Controller
         $items = explode('@type":"Schema"',$second_part);
         return $items[0];
     }
+    public function explode_items($items){
+        return explode('}}',$items);
+    }
     public function get(){
-        //esqueci do add .
         try {
             $test = $this->get_web_page("https://www.submarino.com.br/busca/tv");
-            return $this->explode_content($test['content']);
+            $items = $this->explode_content($test['content']);
+            return $this->explode_items($items)[0];
         } catch (\Throwable $th) {
             return $th->getMessage();
         }
