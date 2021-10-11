@@ -2,23 +2,19 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Log;
+use App\Crawler;
 
 class CrawlerController extends Controller
 {
     function get_web_page( $url )
     {
-        //Código do Stack overflow, estava fazendo sem o UserAgent e não estava funcionando. 
         $user_agent='Mozilla/5.0 (Windows NT 6.1; rv:8.0) Gecko/20100101 Firefox/8.0';
         $options = array(
             CURLOPT_CUSTOMREQUEST  =>"GET",        //set request type post or get
             CURLOPT_POST           =>false,        //set to GET
             CURLOPT_USERAGENT      => $user_agent, //set user agent
-            CURLOPT_COOKIEFILE     =>"cookie.txt", //set cookie file
-            CURLOPT_COOKIEJAR      =>"cookie.txt", //set cookie jar
             CURLOPT_RETURNTRANSFER => true,     // return web page
             CURLOPT_HEADER         => false,    // don't return headers
-            CURLOPT_FOLLOWLOCATION => true,     // follow redirects
-            CURLOPT_ENCODING       => "",       // handle all encodings
             CURLOPT_AUTOREFERER    => true,     // set referer on redirect
             CURLOPT_CONNECTTIMEOUT => 120,      // timeout on connect
             CURLOPT_TIMEOUT        => 120,      // timeout on response
@@ -52,21 +48,16 @@ class CrawlerController extends Controller
         return explode('}}',$items);
     }
     public function set_product($item){
-        $ret = [];
-        $j= 0;
+        $crawler = new Crawler();
         for ($i=0; $i < count($item) ; $i++) { 
-            Log::info($i);
-            Log::info($item[$i]);
             if($item[$i] == '"Product","name"'){
-                $ret[$j]['name'] = str_replace('"',"",str_replace('\\','',$item[$i+1]));
+                $crawler->set_name(str_replace('"',"",str_replace('\\','',$item[$i+1])));
             }
             if($item[$i] == '"AggregateOffer","lowPrice"'){
-                $ret[$j]['price'] = str_replace('"',"",explode(',',$item[$i+1])[0]);
-                $j++;
+                $crawler->set_price(str_replace('"',"",explode(',',$item[$i+1])[0]));
             }
         }
-
-        return $ret;
+        return $crawler;
     }
     public function get($id){
         try {
@@ -79,8 +70,8 @@ class CrawlerController extends Controller
             if($id > 1) 
                 $url = $url. "?limite=" .$id*12 . "&offset=" .$id*12;
 
-            $test = $this->get_web_page($url);
-            $content = $this->explode_content($test['content']);
+            $page = $this->get_web_page($url);
+            $content = $this->explode_content($page['content']);
 
             if($content == "Page not found"){
                 $msg["status"] = "error";
@@ -89,25 +80,24 @@ class CrawlerController extends Controller
             }
 
             $items = $this->explode_items($content);
-            //return $items[0];
             $ret = [];
             $indice = 0;
-            for ($i=0; $i < count($items) ; $i++) { 
+            for ($i=0; $i < count($items) -1 ; $i++) { 
                 $item = $items[$i];
-                $ret[$indice] = $this->set_product(explode(":",$item));
+                $craw = $this->set_product(explode(":",$item));
+                $ret[$indice] = array(
+                    'name' => $craw->name,
+                    'price' => $craw->price,
+                );
                 $indice++;
             }
-
-            return $ret;
-            // return explode(":",$this->explode_items($items)[1]);
+            return response(json_encode($ret),200);
         } catch (\Throwable $th) {
-            return $th->getMessage()." ".$th->getLine();
+            // return $th->getMessage()." ".$th->getLine();
+            $msg["status"] = "error";
+            $msg["response"] = "Something went wrong, please try again later.";
+            return response(json_encode($msg),500);
         }
-        
-
-        // return $this->get_web_page("https://www.submarino.com.br/busca/tv");
-        // return explode('"numberOfItems":24',$this->get_web_page("https://www.submarino.com.br/busca/tv")['content']);
     }
 
-    //
 }
