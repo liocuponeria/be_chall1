@@ -39,9 +39,14 @@ class CrawlerController extends Controller
         return $header;
     }
     public function explode_content($content){
-        $second_part = explode('"numberOfItems":24',$content)[1];
-        $items = explode('@type":"Schema"',$second_part);
-        return $items[0];
+        try {
+            $second_part = explode('"numberOfItems":24',$content)[1];
+            $items = explode('@type":"Schema"',$second_part);
+            return $items[0];
+        } catch (\Throwable $th) {
+            return "Page not found";
+        }
+        
     }
     public function explode_items($items){
         return explode('}}',$items);
@@ -70,9 +75,20 @@ class CrawlerController extends Controller
                 $msg["response"] = "The page must be a number";
                 return response(json_encode($msg),400);
             }
+            $url = "https://www.submarino.com.br/busca/tv";
+            if($id > 1) 
+                $url = $url. "?limite=" .$id*12 . "&offset=" .$id*12;
 
-            $test = $this->get_web_page("https://www.submarino.com.br/busca/tv?limite=48&offset=48");
-            $items = $this->explode_items($this->explode_content($test['content']));
+            $test = $this->get_web_page($url);
+            $content = $this->explode_content($test['content']);
+
+            if($content == "Page not found"){
+                $msg["status"] = "error";
+                $msg["response"] = $content;
+                return response(json_encode($msg),404);
+            }
+
+            $items = $this->explode_items($content);
             //return $items[0];
             $ret = [];
             $indice = 0;
@@ -85,7 +101,7 @@ class CrawlerController extends Controller
             return $ret;
             // return explode(":",$this->explode_items($items)[1]);
         } catch (\Throwable $th) {
-            return $th->getMessage();
+            return $th->getMessage()." ".$th->getLine();
         }
         
 
