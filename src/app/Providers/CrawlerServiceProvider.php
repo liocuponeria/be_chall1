@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Http\Controllers\SubmarinoCrawlerController;
 
 class CrawlerServiceProvider extends ServiceProvider
 {
@@ -13,6 +14,8 @@ class CrawlerServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->singleton(SubmarinoCrawlerController::class, function() {
+            return new SubmarinoCrawlerController();
+        });
     }
 }

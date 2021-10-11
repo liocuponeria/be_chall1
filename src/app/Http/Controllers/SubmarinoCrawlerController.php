@@ -18,10 +18,17 @@ class SubmarinoCrawlerController extends CrawlerController
      */
     public function __construct()
     {
+        //Prepare Goutte\Client for crawling
         $this->client = new Client();
+        //Emulating a browser to avoid IP blocking
         $this->client->setServerParameter('HTTP_USER_AGENT', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:73.0) Gecko/20100101 Firefox/73.0');
     }
 
+
+    /**
+     * Main function of the crawler, makes the requisition,
+     * parse it and returns it to the user
+     */
     public function listItens()
     {
         $ret = '';
@@ -31,6 +38,9 @@ class SubmarinoCrawlerController extends CrawlerController
         return $ret;
     }
 
+    /**
+     * Simple HTML with a small math logic 
+     * */
     public function getPageLinks()
     {
         $ret = '';
@@ -44,11 +54,17 @@ class SubmarinoCrawlerController extends CrawlerController
         return $ret;
     }
 
+    /**
+     * Returns the JSON to be printed in the screen
+     */
     public function getJsonData()
     {
         return '<pre>' . json_encode($this->page->itens, JSON_PRETTY_PRINT) . '</pre>';
     }
 
+    /**
+     * Make the crawler and returns it parsed on the page object
+     */
     public function crawlPage()
     {
         $this->setPage();
@@ -59,11 +75,17 @@ class SubmarinoCrawlerController extends CrawlerController
         return $this->page;
     }
 
+    /**
+     * Initiate the page variable
+     */
     public function setPage()
     {
         $this->page = new SubmarinoTvPage(app(Request::class)->pageNumber);
     }
 
+    /**
+     * Returns the URL based on the page number
+     */
     public function getUrl() 
     {
         return ($this->page->offset === 0) 
@@ -71,11 +93,17 @@ class SubmarinoCrawlerController extends CrawlerController
         : $this->page->getUrl() . $this->page->getGets();
     }
 
+    /**
+     * Makes the request and returns the response object
+     */
     public function setCrawler()
     {
         $this->crawler = $this->client->request('GET', $this->getUrl());
     }
 
+    /**
+     * If occurs any errors, we will stop the execution
+     */
     public function validateCrawler()
     {
         if($this->client->getResponse()->getStatusCode() !== 200){
@@ -83,12 +111,18 @@ class SubmarinoCrawlerController extends CrawlerController
         }
     }
 
+    /**
+     * Parses the crawler response into page object
+     */
     public function parseCrawler() 
     {
         $this->page->setTotalProducts($this->getTotalProducs());
         $this->addPageItens();
     }
 
+    /**
+     * Verifies if a total of products is available
+     */
     public function getTotalProducs()
     {
         $filter = $this->crawler->filter('.BPXil');
@@ -100,6 +134,9 @@ class SubmarinoCrawlerController extends CrawlerController
             : 0;
     }
 
+    /**
+     * Prepares the itens filtered with some regex
+     */
     public function addPageItens()
     {
         $itens = $this->crawler->filter('.epVkvq');
@@ -133,7 +170,5 @@ class SubmarinoCrawlerController extends CrawlerController
             });
         }
     }
-
-    
 }
 

@@ -18,6 +18,9 @@ class SubmarinoSearchPage extends Page
         parent::setUrl(self::URL . $this->product);
     }
 
+    /**
+     * If the pageNumber is invalid, we will force first page
+     */
     protected function filterPageNumber($pageNumber){
         $this->pageNumber = (intval($pageNumber) > 0) ? intval($pageNumber) : 1;
     }
@@ -30,5 +33,10 @@ class SubmarinoSearchPage extends Page
     public function addItem($item)
     {
         $this->itens[] = $item;
+    }
+
+    public function setOffset($offset)
+    {
+        $this->offset = $offset;
     }
 }
