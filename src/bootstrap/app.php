@@ -51,6 +51,8 @@ $app->singleton(
 
 $app->register(Illuminate\Redis\RedisServiceProvider::class);
 
+$app->register(App\Providers\CrawlerServiceProvider::class);
+
 /*
 |--------------------------------------------------------------------------
 | Register Config Files

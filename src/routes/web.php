@@ -11,14 +11,14 @@
 |
 */
 
-$router->get('/', function () use ($router) {
-    return $router->app->version();
+use App\Http\Controllers\SubmarinoCrawlerController;
+
+$router->get('/', function() {
+    return app(SubmarinoCrawlerController::class)->listItens();
 });
 
-$router->group(['prefix' => 'healthz'], function () use ($router) {
-    $router->get('', 'Controller@healthz');
-});
-
-$router->group(['prefix' => 'offer'], function () use ($router) {
-    $router->get('/{id}', 'OfferController@get');
+$router->group(['prefix' => ''], function () use ($router) {
+    $router->get('/{pageNumber}', function(){
+        return app(SubmarinoCrawlerController::class)->listItens();
+    });
 });
