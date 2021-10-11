@@ -5,15 +5,6 @@ use Illuminate\Support\Facades\Log;
 
 class CrawlerController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //
-    }
     function get_web_page( $url )
     {
         //Código do Stack overflow, estava fazendo sem o UserAgent e não estava funcionando. 
@@ -72,8 +63,14 @@ class CrawlerController extends Controller
 
         return $ret;
     }
-    public function get(){
+    public function get($id){
         try {
+            if(!is_numeric($id)){
+                $msg["status"] = "error";
+                $msg["response"] = "The page must be a number";
+                return response(json_encode($msg),400);
+            }
+
             $test = $this->get_web_page("https://www.submarino.com.br/busca/tv?limite=48&offset=48");
             $items = $this->explode_items($this->explode_content($test['content']));
             //return $items[0];
